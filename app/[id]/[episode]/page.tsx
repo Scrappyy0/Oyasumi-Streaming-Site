@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react/no-unescaped-entities */
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import EpisodeContainer from "@/components/episode";
@@ -69,6 +70,7 @@ const Watch = ({ params }: any) => {
           </div>
         )}
         <Skeleton className="rounded-md">
+        {/* eslint-disable-next-line react/no-unescaped-entities */}
           <iframe
             src={""}
             title="Embedded Video"

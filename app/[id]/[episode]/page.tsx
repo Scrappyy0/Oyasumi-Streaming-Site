@@ -6,10 +6,7 @@ import { Skeleton, BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
 import "@vidstack/react/player/styles/default/theme.css";
 import "@vidstack/react/player/styles/default/layouts/video.css";
 import { MediaPlayer, MediaProvider } from "@vidstack/react";
-import {
-  defaultLayoutIcons,
-  DefaultVideoLayout,
-} from "@vidstack/react/player/layouts/default";
+import { defaultLayoutIcons, DefaultVideoLayout } from "@vidstack/react/player/layouts/default";
 import { CONSUMET_URL } from "@/config";
 import Link from "next/link";
 
@@ -25,27 +22,25 @@ interface WatchDataSources {
 }
 
 interface WatchData {
-  sources: {
-    url: string;
-  }[];
+  sources: WatchDataSources[];
+  subtitles: { url: string; lang: string }[];
 }
 
 const Watch = ({ params }: any) => {
   const { id, episode } = params;
   const [isLoading, setIsLoading] = useState(true);
   const [watchData, setWatchData] = useState<WatchData | null>(null);
-  const [episodeDetails, setEpisodeDetails] = useState<EpisodeDetails | null>(
-    null
-  );
+  const [episodeDetails, setEpisodeDetails] = useState<EpisodeDetails | null>(null);
 
-  const sleep = (ms: any) => {
+  const sleep = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
 
   const fetchDetails = useCallback(async () => {
     try {
       const episode_link = await axios.get(
-        CONSUMET_URL + "/watch/" + id + "-episode-" + episode + "?server=gogocdn"
+        CONSUMET_URL + "/watch?episodeId=" + id + "$episode$" + episode + "$both&", 
+        { params: { server: "vidcloud" } }
       );
       const details_res = await axios.get(CONSUMET_URL + "/" + id);
       setWatchData(episode_link.data);
@@ -87,15 +82,27 @@ const Watch = ({ params }: any) => {
       </div>
     );
   }
-  const defaultSourceUrl = watchData.sources
-    .map((value, index, array) => {
-      const source = value as WatchDataSources;
-      if (source.quality === "default") {
-        return source.url;
-      }
-      return null;
-    })
-    .filter((url) => url !== null)[0];
+
+  // Log watchData to check if it's structured correctly
+  console.log("Watch Data:", watchData);
+
+  // Ensure the sources array is populated
+  const videoSource = watchData.sources && watchData.sources[0] ? watchData.sources[0].url : null;
+
+  // Log the video URL to check it
+  console.log("Video URL:", videoSource);
+
+  if (!videoSource) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 pt-10 pb-4">
+        <div className="flex flex-col items-center justify-center pb-5">
+          <div className="text-4xl font-bold mb-4">Video Not Available</div>
+          <div className="text-gray-500">Sorry, we couldn't find the video</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pb-1 mx-auto px-4 pt-10">
       <div className="pb-4">
@@ -113,9 +120,10 @@ const Watch = ({ params }: any) => {
         </div>
       </div>
       <div className="max-w-4xl mx-auto flex">
-        <MediaPlayer src={defaultSourceUrl || ""}>
-          <MediaProvider />
-          <DefaultVideoLayout icons={defaultLayoutIcons} />
+        <MediaPlayer src={videoSource}>
+          <MediaProvider>
+            <DefaultVideoLayout icons={defaultLayoutIcons} />
+          </MediaProvider>
         </MediaPlayer>
       </div>
     </div>

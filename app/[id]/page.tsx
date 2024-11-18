@@ -13,7 +13,7 @@ const Info = ({ params }: any) => {
 
   const fetchDetails = useCallback(async () => {
     try {
-      const response = await axios.get(CONSUMET_URL + "/info/" + id);
+      const response = await axios.get(CONSUMET_URL + "/info?id=" + id);
       setData(response.data);
     } catch (error) {
       console.error("Error fetching details:", error);

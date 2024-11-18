@@ -45,29 +45,10 @@ const DetailsContainer = ({ data }: any) => {
         </div>
         <div className=" pr-4">
           <h1 className="text-3xl font-semibold">{data.title}</h1>
-          <p className="mt-2">
-            <strong>Another Name:</strong>{" "}
-            {data.otherName.split("\n").filter(Boolean).join(", ")}
-          </p>
+          
           <p className="mt-2 gap-2">
             <strong>Genres: </strong>
-            <div className="mt-2 gap-2 flex">
-              {data.genres.map((genre: any, index: any) => (
-                <Link
-                  href={`/genre/${genre.toLowerCase().replace(/ /g, "-")}`}
-                  key={index}
-                  className="gap-8"
-                >
-                  <Button
-                    color={getRandomColor()}
-                    size="sm"
-                    className="text-white"
-                  >
-                    {genre.trim()}
-                  </Button>
-                </Link>
-              ))}
-            </div>
+           
           </p>
           <p className="mt-4">
             <strong>Total Episodes:</strong> {data.totalEpisodes}
